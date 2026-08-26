@@ -50,9 +50,9 @@ def check_for_leaks():
         driver.quit()
 
 if __name__ == "__main__":
-    # GitHub cron runs every 5 mins. 
-    # We loop 3 times per run. 15s load + 75s wait = 90 seconds (1:30 min checks)
-    for i in range(3):
+    # Loops 5 times. 15s page load + 45s wait = 60 seconds per check.
+    # Total runtime: ~5 minutes (matches GitHub's cron trigger)
+    for i in range(5):
         check_for_leaks()
-        if i < 2:
-            time.sleep(75)
+        if i < 4:
+            time.sleep(45)
